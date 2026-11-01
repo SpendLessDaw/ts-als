@@ -1,0 +1,71 @@
+{
+  "name": "ts-als",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Conservative Ableton Live ALS parsing, sample inspection and targeted editing",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      },
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE",
+    "NOTICE.md"
+  ],
+  "engines": {
+    "node": ">=24"
+  },
+  "packageManager": "bun@1.4.4",
+  "scripts": {
+    "build": "tsup",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "test": "vitest run --project unit",
+    "test:fixtures": "vitest run --project private",
+    "prepublishOnly": "node -e \"throw new Error('Publication is disabled during bootstrap')\"",
+    "check:package": "node scripts/check-package.mjs",
+    "check:public": "node scripts/check-public.mjs"
+  },
+  "devDependencies": {
+    "@eslint/js": "9.39.2",
+    "@types/node": "^24.10.13",
+    "eslint": "9.39.2",
+    "typescript-eslint": "8.53.1",
+    "tsup": "8.4.0",
+    "typescript": "5.9.3",
+    "vitest": "4.0.18"
+  },
+  "dependencies": {
+    "saxes": "6.0.0"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SpendLessDaw/ts-als.git"
+  },
+  "homepage": "https://github.com/SpendLessDaw/ts-als",
+  "bugs": {
+    "url": "https://github.com/SpendLessDaw/ts-als/issues"
+  },
+  "keywords": [
+    "ableton",
+    "als",
+    "parser",
+    "daw",
+    "samples"
+  ]
+}

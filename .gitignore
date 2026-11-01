@@ -1,0 +1,47 @@
+node_modules/
+dist/
+coverage/
+*.tgz
+.env*
+.DS_Store
+.reviewbox/.local/
+# Never commit collaborator sessions or derived XML, even outside test_projs.
+*.als
+*.xml
+test_projs/*
+!test_projs/README.md
+# Private media, reports, credentials and local tooling never enter public history.
+*.flp
+*.wav
+*.aif
+*.aiff
+*.mp3
+*.flac
+*.ogg
+*.m4a
+*.mp4
+*.mov
+*.zip
+*.gz
+*.7z
+*.log
+*.pem
+*.key
+*.p12
+*.private.*
+*.local.*
+outputs/
+reports/
+dumps/
+.cache/
+.npmrc
+.reviewbox/
+.codex/
+.claude/
+.agents/
+__pycache__/
+
+# Keep local projects, inspection output and credentials out of future commits.
+
+# Local planning discussion; public decisions are summarized in docs/roadmap.md.
+docs/parity-decisions-2026-11-01.md

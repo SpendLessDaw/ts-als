@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "target": "ES2022", "module": "NodeNext", "moduleResolution": "NodeNext",
+    "strict": true, "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true, "verbatimModuleSyntax": true,
+    "esModuleInterop": true, "skipLibCheck": true, "types": ["node"],
+    "noEmit": true
+  },
+  "include": ["index.ts", "src/**/*.ts", "test/**/*.ts", "test-private/**/*.ts", "*.config.ts"]
+}
