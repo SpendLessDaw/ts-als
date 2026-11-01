@@ -2,7 +2,14 @@
 
 An experimental TypeScript library for reading Ableton Live `.als` files,
 inspecting sample references and making conservative, targeted edits.
-Node 24+. ESM and CommonJS. Not published to npm yet (`private: true`).
+Node 24+. ESM and CommonJS. Experimental alpha release.
+
+```sh
+npm install ts-als@alpha
+```
+
+Reading and targeted writes are tested automatically; native Ableton validation
+is still pending. Do not treat this alpha as a stable writer.
 
 ```ts
 import { readFileSync } from 'node:fs';

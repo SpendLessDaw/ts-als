@@ -1,7 +1,6 @@
 {
   "name": "ts-als",
-  "version": "0.0.0",
-  "private": true,
+  "version": "0.1.0-alpha.1",
   "description": "Conservative Ableton Live ALS parsing, sample inspection and targeted editing",
   "type": "module",
   "main": "./dist/index.cjs",
@@ -36,7 +35,7 @@
     "lint": "eslint .",
     "test": "vitest run --project unit",
     "test:fixtures": "vitest run --project private",
-    "prepublishOnly": "node -e \"throw new Error('Publication is disabled during bootstrap')\"",
+    "prepublishOnly": "bun run test && bun run typecheck && bun run lint && bun run build && bun run check:public && bun run check:package",
     "check:package": "node scripts/check-package.mjs",
     "check:public": "node scripts/check-public.mjs"
   },
@@ -67,5 +66,9 @@
     "parser",
     "daw",
     "samples"
-  ]
+  ],
+  "publishConfig": {
+    "access": "public",
+    "tag": "alpha"
+  }
 }

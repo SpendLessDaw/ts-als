@@ -7,7 +7,7 @@ ts-flp as an API/testing reference, not as a binary format specification.
 Private fixtures and derived dumps must never enter Git, npm, logs or public
 issues. Do not modify originals or write into test_projs. Use temporary output
 directories for future writer tests. No remote, commit, push or publication
-without explicit authorization. Keep private:true during bootstrap.
+without explicit authorization. Prereleases publish under the alpha tag; native validation remains pending.
 
 Public API includes structured reading and experimental targeted writing. Do not
 claim broad Live compatibility or native Ableton validation without evidence.
