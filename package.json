@@ -1,6 +1,6 @@
 {
   "name": "ts-als",
-  "version": "0.1.0-alpha.2",
+  "version": "0.1.0-alpha.3",
   "description": "Conservative Ableton Live ALS parsing, sample inspection and targeted editing",
   "type": "module",
   "main": "./dist/index.cjs",

@@ -32,6 +32,7 @@ try {
     assert.equal(typeof api.listSamples, 'function');
     assert.equal(typeof api[pkg.name === 'ts-als' ? 'parseAls' : 'parseFlp'], 'function');
     if (pkg.name === 'ts-als') {
+      assert.equal(typeof api.copySamples, 'function');
       const bytes = gzipSync('<Ableton Creator="Ableton Live 12.1"><LiveSet/></Ableton>');
       assert(api.serializeAls(api.parseAls(bytes)).equals(bytes));
     }

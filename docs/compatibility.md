@@ -14,7 +14,7 @@ are not automatically enabled for editing.
 | Legacy segmented sample paths | Public files, synthetic edge cases | Structure-based if encountered | Structure-based if encountered |
 | macOS v2 alias path extraction | Public boot-volume aliases; synthetic external-volume cases | Same recognized structure | Same recognized structure |
 | Modern same-file sample relocation | Structure-based if encountered | Enabled for qualified references | Enabled for qualified references |
-| Legacy alias/reference rewriting | Refused | Refused | Refused |
+| Legacy alias/reference rewriting | Experimental: macOS alias + Windows rooted hint | Same recognized structure | Same recognized structure |
 | VST2/VST3 descriptors | Structure-based | Public VST3 example | Public/private examples |
 
 Live 10.0, unrepresented minor releases, Windows-created legacy references and AU
@@ -53,7 +53,12 @@ relocation in memory. This corpus does not demonstrate every feature/platform.
   classic 150-byte v2 alias header and tagged path/mount records 18/19. Our
   independent reader validates record length, kind/version, tag bounds and
   terminator, decodes UTF-8 strictly and rejects mismatched filenames.
-  Unknown alias kinds remain opaque. No alias generator is imported or copied.
+  Unknown input alias kinds remain opaque during reads. Rewriting replaces the
+  path-bearing alias with a generated v2 record, with disabled filesystem IDs.
+  The generator is original TypeScript, not imported reference code.
+- [mac_alias alias.py](https://github.com/dmgbuild/mac_alias/blob/main/src/mac_alias/alias.py):
+  independent MIT format reference for UTF-8 POSIX tags and UTF-16BE names,
+  also used as an external development-only binary decoder.
 - [dawtool ableton.py](https://github.com/offlinemark/dawtool/blob/master/dawtool/daw/ableton.py):
   MasterTrack vs MainTrack and automation target routing. Real or uncertain
   automation still prevents manual-tempo writes.
@@ -61,8 +66,17 @@ relocation in memory. This corpus does not demonstrate every feature/platform.
 `RelativePathType` bases other than project type 3 still require explicit
 `relativeRoots`. In particular, no automatic root is assumed for legacy type 1.
 Filename-only references remain unresolved even if a project root is supplied;
-basename search suggestions do not establish identity. Alias and search-hint
-rewriting is deliberately unsupported until coherent preservation can be shown.
+basename search suggestions do not establish identity. Legacy rewriting updates the alias, filename, relative flags, Pack bindings and
+search hint together, preserving CRC/size and unrelated XML. The `mac_alias`
+independent Python reader successfully decoded generated boot-volume,
+external-volume, long-name and Unicode/emoji cases. This validates binary layout,
+not native Live behavior. Windows destinations use empty Data plus a rooted
+PathHint and Type 1; this combination has synthetic tests only.
+
+`copySamples` adds explicit, non-destructive disk I/O: deduplicated copies,
+collision-safe names, source overrides, cancellation and cleanup on errors. It
+returns a rewritten handle and never saves the project or deletes the originals.
+Refer to the README for the full operation contract.
 
 All production implementation is original TypeScript. MIT reference code was
 consulted for format observations; no Python dependency or GPL source is used.

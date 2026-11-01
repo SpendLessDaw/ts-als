@@ -15,7 +15,7 @@ is still pending. Do not treat this alpha as a stable writer.
 import { readFileSync } from 'node:fs';
 import {
   parseAls, getAlsVersion, readAlsTempo, listSamples, listPlugins,
-  inspectSamples, writeAlsTempo, rewriteSamplePaths, serializeAls,
+  inspectSamples, writeAlsTempo, rewriteSamplePaths, copySamples, serializeAls,
 } from 'ts-als';
 
 const parsed = parseAls(readFileSync('/music/Project/Song.als'));
@@ -57,7 +57,7 @@ const bytes = serializeAls(relocated); // caller decides where/when to save
   Writer results are experimental until the user's Ableton tester validates them.
 - Parsed handles are opaque and immutable. `serializeAls` returns a defensive
   copy, byte-identical to the input when unmodified. After edits, gzip bytes may
-  differ, but XML outside the selected attribute values is preserved exactly.
+  differ, but XML outside the selected path-bearing fields or tempo values is preserved exactly.
 - Tempo writes accept 20–999 BPM. They update both the manual value and a
   matching single negative-time default event. Real or uncertain automation is
   refused. This does not change scene tempos or evaluate a performance timeline.
@@ -69,8 +69,12 @@ const bytes = serializeAls(relocated); // caller decides where/when to save
   have `supported: false`; their occurrence and available name are retained.
   This is not a complete inventory of media hidden inside third-party plugin state.
 - Relocation writes absolute paths, clears relative hints and preserves media
-  size/CRC: it relocates the **same file**, not replacement audio. Unknown fields,
-  legacy aliases and Pack-bound references are refused. No on-disk files are moved.
+  size/CRC: it relocates the **same file**, not replacement audio. Unknown modern fields and
+  unsupported layouts are refused. Legacy references update the name, segmented
+  hints, relative flags and alias together. macOS aliases cover boot/external
+  volumes; Windows destinations clear stale macOS data and use a rooted hint.
+  Pack bindings are cleared when relocating media to ordinary files. These legacy
+  writes are experimental, particularly Windows references. No on-disk files are moved.
 - VST2/VST3 names are read where available. Other PluginDevice descriptors are
   reported as `unknown`; AU is not validated. Vendor remains unavailable (`null`).
   Native devices, plugin installation detection and plugin-state decoding are out of scope.
@@ -110,6 +114,53 @@ suggestions, never proof of identity. `maxSearchEntries` defaults to 100,000 and
 throws when exceeded. `concurrency` defaults to 8 (1–64), `signal` supports
 cancellation, and duplicate file checks are cached only within one inspection.
 Filesystem results are a snapshot, not a guarantee at the time of later copying.
+
+## Copy samples and relink the project
+
+```ts
+const result = await copySamples(parsed, {
+  destinationDirectory: '/music/NewProject/Samples',
+  projectRoot: '/music/OriginalProject',
+  // relativeRoots: { '1': '/music/OriginalProject' },
+  // sources: { 3: '/confirmed/location/missing.wav' },
+  // onMissing: 'skip', // default: error before copying unresolved samples
+  // signal: abortController.signal,
+});
+// result.copies: sourcePath, destinationPath, referenceIndexes
+// result.skipped: unresolved occurrences explicitly skipped
+const updatedProject = serializeAls(result.parsed);
+// Save updatedProject to a NEW .als file yourself. Originals are untouched.
+```
+
+`copySamples` is the explicit disk-I/O operation. It resolves/checks sources,
+preflights reference edits, copies each distinct real source once, and returns a
+new parsed project referencing the copies. Repeated occurrences share the copy;
+different files with the same basename receive different names. Existing files
+are never overwritten: normalized, case-insensitive names are reserved and races
+are retried using exclusive creation. No source or original project is deleted.
+
+Ambiguous and name-only search matches require explicit `sources` approval from
+the caller; the library never chooses one arbitrarily. `onMissing: 'skip'` leaves
+those references unchanged and reports them. Explicit source paths must exist.
+All context and destination paths must be native absolute paths. Foreign paths
+can be relinked by supplying local sources. Only referenced media is copied;
+analysis sidecars and plugin-internal media are not included.
+
+Copies run sequentially with bounded memory, using a temporary staging file in
+the destination. Cancellation is checked before/after each filesystem copy, not
+mid-copy. On failure/cancellation, this call removes its staged and completed
+copies where possible; cleanup failures are reported. Existing directories and
+files remain untouched; newly created destination directories may remain empty.
+A process crash or concurrent external modification can leave partial results.
+The `.als` file is never saved automatically.
+
+`rewriteSamplePaths` remains synchronous and performs no disk I/O. Its optional
+third argument `{ macBootVolumeName: 'Macintosh HD' }` overrides the synthetic
+boot-volume label used for legacy aliases. The same option is available to
+`copySamples`. Alias dates/IDs are synthetic or disabled; this is path-based
+relocation, not a claim to reproduce Finder metadata. Native Live validation is
+still pending; the independent `mac_alias` decoder verifies generated binary
+paths and Unicode names, but does not prove Live's resolution behavior.
 
 ## Development and release
 

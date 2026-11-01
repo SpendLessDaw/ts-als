@@ -35,11 +35,11 @@ it('does not enable inconsistent creator/schema headers', () => {
 });
 it('reads legacy relative segments and requires an explicit base for type 1', async () => {
   const p = parseAls(gzipSync(session(10, legacy())));
-  expect(listSamples(p)[0]).toMatchObject({ layout: 'legacy', path: '../Audio/kick.wav', relativePath: '../Audio/kick.wav', pathHint: 'Samples/kick.wav', supported: true, writable: false });
+  expect(listSamples(p)[0]).toMatchObject({ layout: 'legacy', path: '../Audio/kick.wav', relativePath: '../Audio/kick.wav', pathHint: 'Samples/kick.wav', supported: true, writable: true });
   expect((await inspectSamples(p))[0]?.status).toBe('unresolved');
   const base = process.platform === 'win32' ? 'C:\\Project\\Sets' : '/Project/Sets';
   expect((await inspectSamples(p, { relativeRoots: { '1': base } }))[0]?.candidates).toHaveLength(1);
-  expect(() => rewriteSamplePaths(p, () => '/new/kick.wav')).toThrow('writing');
+  expect(listSamples(rewriteSamplePaths(p, () => '/new/kick.wav'))[0]?.absolutePath).toBe('/new/kick.wav');
 });
 it('reads bounded macOS v2 aliases including boot and external volumes', () => {
   expect(readAliasPath(alias())).toBe('/Audio/kick.wav');

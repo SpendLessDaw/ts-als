@@ -9,7 +9,7 @@ export interface AlsTempo {
   automation: 'none' | 'present' | 'unknown';
 }
 export interface AlsSampleRef {
-  /** Recognized representation; legacy alias writes remain disabled. */
+  /** Recognized representation; writable reflects structural editing support. */
   layout: 'modern' | 'legacy' | 'unknown';
   fileName: string | null;
   /** Search hint, not an authoritative absolute path. */

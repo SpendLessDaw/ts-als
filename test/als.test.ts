@@ -95,7 +95,7 @@ describe('conservative writers', () => {
     expect(rewriteSamplePaths(original, (p) => p)).toBe(original);
   });
   it('rejects unsafe or unknown reference writes atomically', () => {
-    for (const content of [sample().replace('LivePackName Value=""', 'LivePackName Value="Factory"'), sample().replace('</FileRef>', '<Alias>FF</Alias></FileRef>'), '<SampleRef><FileRef><Name Value="a.wav"/></FileRef></SampleRef>']) {
+    for (const content of [sample().replace('</FileRef>', '<Alias>FF</Alias></FileRef>'), '<SampleRef><FileRef><Name Value="a.wav"/></FileRef></SampleRef>']) {
       const p = parsed(session(sample() + content));
       const before = serializeAls(p);
       expect(() => rewriteSamplePaths(p, () => '/new.wav')).toThrow();

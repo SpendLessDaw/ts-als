@@ -7,7 +7,9 @@ export { readAlsTempo } from './src/api/readAlsTempo.js';
 export { writeAlsTempo } from './src/api/writeAlsTempo.js';
 export { listSamples } from './src/api/listSamples.js';
 export { listPlugins } from './src/api/listPlugins.js';
-export { rewriteSamplePaths } from './src/api/rewriteSamplePaths.js';
+export { rewriteSamplePaths, type RewriteSamplePathsOptions } from './src/api/rewriteSamplePaths.js';
 
 export { inspectSamples } from './src/api/inspectSamples.js';
 export type { SampleInspectionOptions, SampleInspection, SampleCandidate, SampleStatus } from './src/samples/inspectReferences.js';
+
+export { copySamples, type CopySamplesOptions, type CopySamplesResult, type SampleCopy } from './src/api/copySamples.js';

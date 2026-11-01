@@ -28,7 +28,7 @@ export function readSampleReference(el: Element, referenceIndex: number, schemaW
   const alias = legacy && data && !data.children.length && dataEnd >= data.openEnd && dataEnd - data.openEnd <= 262140
     ? readAliasPath(xml.slice(data.openEnd, dataEnd)) : null;
   // A mismatched alias must never identify another file as this sample.
-  const absolutePath = modern ? value(child(el, 'Path')) || null
+  let absolutePath = modern ? value(child(el, 'Path')) || null
     : alias && alias.split('/').at(-1) === fileName ? alias : null;
   const relativePath = modern ? value(child(el, 'RelativePath')) || null
     : legacy && value(child(el, 'HasRelativePath')) === 'true'
@@ -37,11 +37,17 @@ export function readSampleReference(el: Element, referenceIndex: number, schemaW
   // Unrooted hints are deliberately not guessed to be POSIX absolute paths.
   const pathHint = hints?.length ? [...hints, fileName].join('/') : null;
   const known = new Set(['Path', 'RelativePath', 'RelativePathType', 'Type', 'LivePackName', 'LivePackId', 'OriginalFileSize', 'OriginalCrc']);
-  const writable = schemaWritable && modern && ['0', '1', '3', '7'].includes(relativePathType ?? '')
-    && el.children.every((n) => known.has(n.name) && n.children.length === 0 && n.attrs.Value !== undefined)
-    && new Set(el.children.map((n) => n.name)).size === el.children.length
-    && value(child(el, 'Type')) === '1'
-    && !value(child(el, 'LivePackName')) && !value(child(el, 'LivePackId'));
+  const unique = new Set(el.children.map((n) => n.name)).size === el.children.length;
+  const scalar = (name: string) => { const node = child(el, name); return node && node.children.length === 0 && node.attrs.Value !== undefined; };
+  const modernWritable = modern && el.children.every((n) => known.has(n.name) && n.children.length === 0 && n.attrs.Value !== undefined)
+    && ['Path', 'RelativePath', 'RelativePathType', 'Type'].every(scalar);
+  const legacyWritable = legacy && ['Name', 'HasRelativePath', 'RelativePathType', 'Type', 'RefersToFolder'].every(scalar)
+    && !!data && !data.children.length && !!at(el, 'SearchHint/PathHint')
+    && ['LivePackName', 'LivePackId'].every((name) => !child(el, name) || scalar(name));
+  const writable = schemaWritable && ['1', '2'].includes(value(child(el, 'Type')) ?? '') && unique && (modernWritable || legacyWritable);
+  // Rooted Windows hints are explicit in absolute legacy records without a macOS alias.
+  if (legacy && !absolutePath && !hasEmbeddedData && value(child(el, 'HasRelativePath')) === 'false'
+    && pathHint && (/^[A-Za-z]:\//.test(pathHint) || pathHint.startsWith('//'))) absolutePath = pathHint.replace(/\//g, '\\');
   return { referenceIndex, path: absolutePath ?? relativePath ?? fileName ?? '', absolutePath, relativePath,
     relativePathType, supported: modern || legacy, writable,
     layout: modern ? 'modern' : legacy ? 'legacy' : 'unknown', fileName,
