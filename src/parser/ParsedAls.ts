@@ -9,6 +9,12 @@ export interface AlsTempo {
   automation: 'none' | 'present' | 'unknown';
 }
 export interface AlsSampleRef {
+  /** Recognized representation; legacy alias writes remain disabled. */
+  layout: 'modern' | 'legacy' | 'unknown';
+  fileName: string | null;
+  /** Search hint, not an authoritative absolute path. */
+  pathHint: string | null;
+  hasEmbeddedData: boolean;
   referenceIndex: number;
   path: string;
   absolutePath: string | null;

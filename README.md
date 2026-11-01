@@ -44,11 +44,15 @@ const bytes = serializeAls(relocated); // caller decides where/when to save
 - Limits default to 128 MiB compressed, 256 MiB expanded, depth 256,
   2,000,000 elements and 128 attributes per element. Limits are configurable
   in `parseAls(bytes, limits)`. Parsing is synchronous: use a worker for large sets.
-- Reading is structure-based. Verified against a private Live 12 corpus with
-  XML MajorVersion `5`, MinorVersion `12.0_12120`. Other variants are not a
-  compatibility promise; known fields may be read and unknown references retained.
-- Writes require that exact schema and a Live 12 creator. This is a conservative
-  format gate, not a guarantee for every file sharing its header.
+- Experimental structural support targets **Live 10, 11 and 12**. Tested on
+  15 public ALS files authored by Live 10.1.7/10.1.9, 11.3.13, 12.0b16,
+  12.2/12.2.1, plus the private Live 12 corpus. Live 10.0 and other unrepresented
+  minor releases have theoretical coverage only; Windows-authored legacy files
+  have not been verified. See [compatibility evidence](https://github.com/SpendLessDaw/ts-als/blob/main/docs/compatibility.md).
+- Writes require XML MajorVersion `5`, a `10.0_*`, `11.0_*` or `12.0_*`
+  format and a matching Live creator family. This experimental structural gate
+  is followed by operation-specific checks, not a promise of universal support.
+  Other versions remain readable where recognized, but read-only.
 - No native Live opening/playback/save/reopen validation has been performed.
   Writer results are experimental until the user's Ableton tester validates them.
 - Parsed handles are opaque and immutable. `serializeAls` returns a defensive
@@ -58,8 +62,11 @@ const bytes = serializeAls(relocated); // caller decides where/when to save
   matching single negative-time default event. Real or uncertain automation is
   refused. This does not change scene tempos or evaluate a performance timeline.
 - Samples enumerate `SampleRef/FileRef` occurrences without deduplication.
-  Modern direct paths are supported. Legacy/unknown layouts have
-  `supported: false`; their reference is retained even without a usable path.
+  Modern direct paths and legacy segmented relative paths are supported.
+  Legacy macOS v2 aliases expose their UTF-8 POSIX path when fully recognized.
+  `layout`, `fileName`, `pathHint` and `hasEmbeddedData` describe the reference;
+  hints are retained but never treated as authoritative paths. Unknown layouts
+  have `supported: false`; their occurrence and available name are retained.
   This is not a complete inventory of media hidden inside third-party plugin state.
 - Relocation writes absolute paths, clears relative hints and preserves media
   size/CRC: it relocates the **same file**, not replacement audio. Unknown fields,
@@ -109,6 +116,8 @@ Filesystem results are a snapshot, not a guarantee at the time of later copying.
 ```sh
 bun install --frozen-lockfile
 bun run test
+bun run fixtures:fetch # optional public corpus, pinned URLs and SHA-256
+bun run test:external # local downloaded public corpus
 bun run test:fixtures # local only; requires private fixtures and Python 3
 bun run typecheck
 bun run lint
@@ -116,7 +125,9 @@ bun run build
 bun run check:package # audits an actual tarball, installs it and imports ESM/CJS
 ```
 
-Public CI uses synthetic fixtures only. Private ALS files, extracted XML, media,
+Public CI uses synthetic fixtures only. Downloaded public sessions stay in
+ignored `.cache/public-als/`; only provenance, hashes and test code are committed.
+Private ALS files, extracted XML, media,
 original filenames, paths and logs must never enter Git, npm, issues or CI artifacts.
 See [contributing](CONTRIBUTING.md), [release checklist](RELEASING.md),
 [deferred work](docs/roadmap.md) and [research credits](NOTICE.md).

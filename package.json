@@ -1,6 +1,6 @@
 {
   "name": "ts-als",
-  "version": "0.1.0-alpha.1",
+  "version": "0.1.0-alpha.2",
   "description": "Conservative Ableton Live ALS parsing, sample inspection and targeted editing",
   "type": "module",
   "main": "./dist/index.cjs",
@@ -37,7 +37,9 @@
     "test:fixtures": "vitest run --project private",
     "prepublishOnly": "bun run test && bun run typecheck && bun run lint && bun run build && bun run check:public && bun run check:package",
     "check:package": "node scripts/check-package.mjs",
-    "check:public": "node scripts/check-public.mjs"
+    "check:public": "node scripts/check-public.mjs",
+    "test:external": "vitest run --project external",
+    "fixtures:fetch": "node scripts/fetch-public-fixtures.mjs"
   },
   "devDependencies": {
     "@eslint/js": "9.39.2",

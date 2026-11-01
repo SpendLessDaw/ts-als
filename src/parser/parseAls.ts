@@ -1,4 +1,5 @@
 import { SaxesParser } from 'saxes';
+import { readSampleReference } from '../samples/readSampleReference.js';
 import { decodeAlsContainer, type AlsDecodeLimits } from '../container/decodeAlsContainer.js';
 import type { ParsedAls, AlsPluginRef, AlsTempo } from './ParsedAls.js';
 import { at, child, children, states, value, type Element, type State } from '../internal/state.js';
@@ -54,9 +55,11 @@ export function parseAls(input: Uint8Array, limits: AlsParseLimits = {}): Parsed
   if (!live) throw new Error('Expected exactly one Ableton LiveSet');
   const creator = root.attrs.Creator ?? null;
   const formatVersion = root.attrs.MinorVersion ?? null;
-  // Only the precise schema represented in the private corpus is enabled for editing.
-  const writable = root.attrs.MajorVersion === '5' && formatVersion === '12.0_12120'
-    && root.attrs.xmlns === undefined && /^Ableton Live 12\./.test(creator ?? '');
+  // Experimental structural support for Live 10–12, not a native validation claim.
+  const family = /^(10|11|12)\.0_\d+$/.exec(formatVersion ?? '')?.[1];
+  const creatorFamily = /^Ableton Live (10|11|12)\./.exec(creator ?? '')?.[1];
+  const writable = root.attrs.MajorVersion === '5' && family !== undefined
+    && family === creatorFamily && root.attrs.xmlns === undefined;
   const parsed: ParsedAls = Object.freeze({ creator, formatVersion, writable });
   const mainTracks = [...children(live, 'MainTrack'), ...children(live, 'MasterTrack')];
   const main = mainTracks.length === 1 ? mainTracks[0] : undefined;
@@ -92,20 +95,9 @@ export function parseAls(input: Uint8Array, limits: AlsParseLimits = {}): Parsed
     if (children(container, 'FileRef').length === 0) sampleElements.push(container);
   }
   sampleElements.sort((a, b) => a.start - b.start);
-  const samples: State['samples'] = sampleElements.map((el, referenceIndex) => {
-    const absolutePath = value(child(el, 'Path')) || null;
-    const relativePath = value(child(el, 'RelativePath')) || null;
-    const relativePathType = value(child(el, 'RelativePathType'));
-    const supported = el.name === 'FileRef' && child(el, 'Path') !== undefined && child(el, 'RelativePath')?.attrs.Value !== undefined;
-    const known = new Set(['Path', 'RelativePath', 'RelativePathType', 'Type', 'LivePackName', 'LivePackId', 'OriginalFileSize', 'OriginalCrc']);
-    const canWrite = writable && supported && ['0', '1', '3', '7'].includes(relativePathType ?? '')
-      && el.children.every((n) => known.has(n.name) && n.children.length === 0 && n.attrs.Value !== undefined)
-      && new Set(el.children.map((n) => n.name)).size === el.children.length
-      && value(child(el, 'Type')) === '1'
-      && !value(child(el, 'LivePackName')) && !value(child(el, 'LivePackId'));
-    return { element: el, ref: { referenceIndex, path: absolutePath ?? relativePath ?? '',
-      absolutePath, relativePath, relativePathType, supported, writable: canWrite } };
-  });
+  const samples: State['samples'] = sampleElements.map((el, referenceIndex) => ({
+    element: el, ref: readSampleReference(el, referenceIndex, writable, xml),
+  }));
   const plugins: AlsPluginRef[] = pluginElements.map((el) => {
     const desc = child(el, 'PluginDesc');
     const vst2 = child(desc, 'VstPluginInfo');
