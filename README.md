@@ -1,7 +1,9 @@
-# ts-als
+# ts-als — Ableton Live ALS parser for TypeScript and Node.js
 
-An experimental TypeScript library for reading Ableton Live `.als` files,
-inspecting sample references and making conservative, targeted edits.
+Use **ts-als** to read Ableton Live Set files from JavaScript or TypeScript, inspect sample references, list external plugins and read tempo. Targeted tempo and sample-path edits are experimental; native Ableton Live validation is still pending.
+
+[npm package](https://www.npmjs.com/package/ts-als) · [GitHub repository](https://github.com/SpendLessDaw/ts-als)
+
 Node 24+. ESM and CommonJS. Experimental alpha release.
 
 ```sh
@@ -184,3 +186,8 @@ See [contributing](CONTRIBUTING.md), [release checklist](RELEASING.md),
 [deferred work](docs/roadmap.md) and [research credits](NOTICE.md).
 
 MIT license.
+
+## Related libraries
+
+For FL Studio `.flp` files, see [ts-flp](https://github.com/SpendLessDaw/ts-flp).
+Both libraries are maintained by [SpendLess](https://spendlessdaw.app).

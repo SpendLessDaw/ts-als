@@ -1,7 +1,7 @@
 {
   "name": "ts-als",
   "version": "0.1.0-alpha.3",
-  "description": "Conservative Ableton Live ALS parsing, sample inspection and targeted editing",
+  "description": "Experimental TypeScript library for reading Ableton Live ALS files, inspecting samples and plugins, and making targeted edits.",
   "type": "module",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
@@ -63,11 +63,17 @@
     "url": "https://github.com/SpendLessDaw/ts-als/issues"
   },
   "keywords": [
+    "typescript",
+    "javascript",
+    "nodejs",
     "ableton",
+    "ableton-live",
     "als",
     "parser",
     "daw",
-    "samples"
+    "samples",
+    "audio",
+    "music-production"
   ],
   "publishConfig": {
     "access": "public",
