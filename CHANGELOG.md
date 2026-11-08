@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.1.0-alpha.4
+
+- `writeAlsOverwriteProtection(parsed, value)` sets the LiveSet
+  `OverwriteProtectionNumber`. Live asks for "Save As" instead of saving in
+  place when this number is lower than its own (sets from older templates).
+  Observed on Live 12.4.16 Lite: raising it lets Live save in place, and Live
+  writes its own value back on save. Other Live versions are not validated.
+
 ## 0.1.0-alpha.1
 
 Initial experimental release:

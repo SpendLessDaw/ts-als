@@ -5,6 +5,7 @@ export type { ParsedAls, AlsTempo, AlsSampleRef, AlsPluginRef } from './src/pars
 export { getAlsVersion } from './src/api/getAlsVersion.js';
 export { readAlsTempo } from './src/api/readAlsTempo.js';
 export { writeAlsTempo } from './src/api/writeAlsTempo.js';
+export { writeAlsOverwriteProtection } from './src/api/writeAlsOverwriteProtection.js';
 export { listSamples } from './src/api/listSamples.js';
 export { listPlugins } from './src/api/listPlugins.js';
 export { rewriteSamplePaths, type RewriteSamplePathsOptions } from './src/api/rewriteSamplePaths.js';

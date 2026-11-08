@@ -14,6 +14,8 @@ export interface State {
   limits: AlsParseLimits;
   tempo: AlsTempo;
   tempoValues: Element[];
+  /** LiveSet/OverwriteProtectionNumber, when present exactly once. */
+  overwriteProtection: Element | undefined;
   samples: { ref: AlsSampleRef; element: Element }[];
   plugins: AlsPluginRef[];
 }

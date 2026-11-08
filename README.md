@@ -17,7 +17,8 @@ is still pending. Do not treat this alpha as a stable writer.
 import { readFileSync } from 'node:fs';
 import {
   parseAls, getAlsVersion, readAlsTempo, listSamples, listPlugins,
-  inspectSamples, writeAlsTempo, rewriteSamplePaths, copySamples, serializeAls,
+  inspectSamples, writeAlsTempo, writeAlsOverwriteProtection, rewriteSamplePaths,
+  copySamples, serializeAls,
 } from 'ts-als';
 
 const parsed = parseAls(readFileSync('/music/Project/Song.als'));
@@ -37,7 +38,10 @@ const edited = writeAlsTempo(parsed, 125);
 const relocated = rewriteSamplePaths(edited, (oldPath) =>
   oldPath === '/old/kick.wav' ? '/new/kick.wav' : oldPath,
 );
-const bytes = serializeAls(relocated); // caller decides where/when to save
+// A set copied from an older template: let Live save it in place instead of
+// asking for "Save As" (Live does so when this number is lower than its own).
+const savable = writeAlsOverwriteProtection(relocated, 99999);
+const bytes = serializeAls(savable); // caller decides where/when to save
 ```
 
 ## Current compatibility and limits

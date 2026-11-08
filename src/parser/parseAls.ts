@@ -105,6 +105,7 @@ export function parseAls(input: Uint8Array, limits: AlsParseLimits = {}): Parsed
     return { id: el.attrs.Id ?? null, name: value(child(vst2, 'PlugName')) ?? value(child(vst3, 'Name')),
       vendor: null, format: vst2 && !vst3 ? 'vst2' : vst3 && !vst2 ? 'vst3' : 'unknown' };
   });
-  states.set(parsed, { bytes, xml, limits: { ...limits }, tempo, tempoValues, samples, plugins });
+  const overwriteProtection = child(live, 'OverwriteProtectionNumber');
+  states.set(parsed, { bytes, xml, limits: { ...limits }, tempo, tempoValues, overwriteProtection, samples, plugins });
   return parsed;
 }
