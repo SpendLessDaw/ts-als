@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.0-alpha.5
+
+- Sample references saved by Live 12.4 stay writable: Live 12.4 adds an empty
+  `SourceHint` to every modern `FileRef`, which made `listSamples` mark them
+  read-only. An empty `SourceHint` is accepted and preserved; a filled one keeps
+  the reference read-only until its meaning is known.
+
 ## 0.1.0-alpha.4
 
 - `writeAlsOverwriteProtection(parsed, value)` sets the LiveSet

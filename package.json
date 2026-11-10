@@ -1,6 +1,6 @@
 {
   "name": "ts-als",
-  "version": "0.1.0-alpha.4",
+  "version": "0.1.0-alpha.5",
   "description": "Experimental TypeScript library for reading Ableton Live ALS files, inspecting samples and plugins, and making targeted edits.",
   "type": "module",
   "main": "./dist/index.cjs",

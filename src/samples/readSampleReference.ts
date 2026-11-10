@@ -39,7 +39,10 @@ export function readSampleReference(el: Element, referenceIndex: number, schemaW
   const known = new Set(['Path', 'RelativePath', 'RelativePathType', 'Type', 'LivePackName', 'LivePackId', 'OriginalFileSize', 'OriginalCrc']);
   const unique = new Set(el.children.map((n) => n.name)).size === el.children.length;
   const scalar = (name: string) => { const node = child(el, name); return node && node.children.length === 0 && node.attrs.Value !== undefined; };
-  const modernWritable = modern && el.children.every((n) => known.has(n.name) && n.children.length === 0 && n.attrs.Value !== undefined)
+  // Live 12.4 adds an empty SourceHint; a filled one is not understood yet.
+  const emptySourceHint = (n: Element) => n.name === 'SourceHint' && n.children.length === 0 && n.attrs.Value === '';
+  const modernWritable = modern && el.children.every((n) => emptySourceHint(n)
+    || (known.has(n.name) && n.children.length === 0 && n.attrs.Value !== undefined))
     && ['Path', 'RelativePath', 'RelativePathType', 'Type'].every(scalar);
   const legacyWritable = legacy && ['Name', 'HasRelativePath', 'RelativePathType', 'Type', 'RefersToFolder'].every(scalar)
     && !!data && !data.children.length && !!at(el, 'SearchHint/PathHint')
